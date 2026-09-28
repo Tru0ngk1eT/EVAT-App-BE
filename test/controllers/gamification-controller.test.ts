@@ -7,9 +7,10 @@ import { GameVirtualItem, GameProfile, GameEvent, GameBadge, GameQuest } from ".
 jest.mock("../../src/models/game-model", () => {
     // Mock the constructor and save method for instance-based operations
     const mockSave = jest.fn().mockResolvedValue(this);
-    const mockModel = jest.fn().mockImplementation(() => ({
-        save: mockSave,
-    })) as any;
+    const mockModel = jest.fn().mockImplementation((data) => ({
+    ...data,
+    save: mockSave,
+})) as any;
 
     // Attach static methods
     mockModel.create = jest.fn();
@@ -119,9 +120,9 @@ describe("GamificationController", () => {
 
       await gamificationController.createVirtualItem(mockRequest as Request, mockResponse as Response);
 
-      expect(GameVirtualItem.create).toHaveBeenCalledWith(itemData);
+      expect(GameVirtualItem).toHaveBeenCalledWith(itemData);
       expect(mockResponse.status).toHaveBeenCalledWith(201);
-      expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: itemData }));
+      expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining(itemData) }));
     });
   });
 
@@ -134,9 +135,9 @@ describe("GamificationController", () => {
 
         await gamificationController.createBadge(mockRequest as Request, mockResponse as Response);
 
-        expect(GameBadge.create).toHaveBeenCalledWith(badgeData);
+        expect(GameBadge).toHaveBeenCalledWith(badgeData);
         expect(mockResponse.status).toHaveBeenCalledWith(201);
-        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: badgeData }));
+        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining(badgeData) }));
       });
   });
 
@@ -149,9 +150,9 @@ describe("GamificationController", () => {
 
         await gamificationController.createQuest(mockRequest as Request, mockResponse as Response);
 
-        expect(GameQuest.create).toHaveBeenCalledWith(questData);
+        expect(GameQuest).toHaveBeenCalledWith(questData);
         expect(mockResponse.status).toHaveBeenCalledWith(201);
-        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: questData }));
+        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining(questData) }));
     });
   });
 
@@ -160,15 +161,14 @@ describe("GamificationController", () => {
       test("Case: Should create a game profile successfully", async () => {
         const profileData = { main_app_user_id: mockUser.id };
         mockRequest = { body: profileData };
-        (GameProfile.findOne as jest.Mock).mockResolvedValue(null);
-        (GameProfile.create as jest.Mock).mockResolvedValue(profileData);
+        (GameProfile.findOne as jest.Mock).mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
         
         await gamificationController.createGameProfile(mockRequest as Request, mockResponse as Response);
 
         expect(GameProfile.findOne).toHaveBeenCalledWith({ main_app_user_id: mockUser.id });
-        expect(GameProfile.create).toHaveBeenCalledWith(profileData);
+        expect(GameProfile).toHaveBeenCalledWith(profileData);
         expect(mockResponse.status).toHaveBeenCalledWith(201);
-        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: profileData }));
+        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining(profileData) }));
       });
   });
 
@@ -181,9 +181,9 @@ describe("GamificationController", () => {
 
         await gamificationController.createEvent(mockRequest as Request, mockResponse as Response);
 
-        expect(GameEvent.create).toHaveBeenCalledWith(eventData);
+        expect(GameEvent).toHaveBeenCalledWith(eventData);
         expect(mockResponse.status).toHaveBeenCalledWith(201);
-        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: eventData }));
+        expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining(eventData) }));
     });
   });
 
