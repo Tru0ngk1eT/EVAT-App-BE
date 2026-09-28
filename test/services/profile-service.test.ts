@@ -60,7 +60,7 @@ describe("profile-service", () => {
             // Assert
             expect(ProfileRepository.findByUserId).toHaveBeenCalledWith(userId);
             expect(ProfileRepository.updateByUserId).toHaveBeenCalledWith(userId, {
-                userCarModel: vehicleId,
+                user_car_model: vehicleId,
             });
             expect(result).toEqual(updatedProfile);
         });
@@ -224,8 +224,9 @@ describe("profile-service", () => {
             const userId = "user123";
             const defaultProfile = {
                 user_id: userId,
-                user_car_model: null,
-                favourite_stations: [],
+         	user_car_model: null,
+    		favourite_stations: [],
+    		avatarURL: null,
             };
 
             (ProfileRepository.findByUserId as jest.Mock).mockResolvedValue(null);
