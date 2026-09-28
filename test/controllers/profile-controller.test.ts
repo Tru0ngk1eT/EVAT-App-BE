@@ -5,6 +5,7 @@ import VehicleService from "../../src/services/vehicle-service";
 import UserService from "../../src/services/user-service";
 import ChargingStationService from "../../src/services/station-service";
 import { UserProfileResponse } from "../../src/dtos/user-profile-response";
+import { UserStatsService } from '../../src/services/user-stats-service';
 
 // Mock services
 jest.mock("../../src/services/profile-service");
@@ -27,12 +28,19 @@ describe("ProfileController", () => {
     mockProfileService = new ProfileService() as jest.Mocked<ProfileService>;
     mockVehicleService = new VehicleService() as jest.Mocked<VehicleService>;
     mockStationService = new ChargingStationService() as jest.Mocked<ChargingStationService>;
+    
+  const mockUserStatsService = {
+    markProfileVehicleSet: jest.fn().mockResolvedValue({ newAchievements: [] }),
+    markFavouriteChargeSaved: jest.fn().mockResolvedValue({ newAchievements: [] }),
+    markProfilePicSet: jest.fn().mockResolvedValue({ stats: {}, newAchievements: [] }),
+  } as unknown as UserStatsService;    
 
     profileController = new ProfileController(
       mockUserService,
       mockProfileService,
       mockVehicleService,
-      mockStationService
+      mockStationService,
+      mockUserStatsService
     );
 
     // Common response setup with jest spies
@@ -181,7 +189,7 @@ describe("ProfileController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Update user vehicle model successfully",
-        data: mockUpdatedProfile,
+        data: { profile: mockUpdatedProfile, newAchievements: [] },
       });
     });
 
@@ -276,7 +284,7 @@ describe("ProfileController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Add favourite station successfully",
-        data: mockUpdatedProfile,
+        data: { profile: mockUpdatedProfile, newAchievements: [] },
       });
     });
 
