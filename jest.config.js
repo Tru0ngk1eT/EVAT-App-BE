@@ -4,4 +4,6 @@ module.exports = {
   transform: {
     "^.+\.tsx?$": ["ts-jest",{}],
   },
+  testMatch: ["**/test/**/*.test.ts"],
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 };
