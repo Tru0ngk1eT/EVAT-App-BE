@@ -382,6 +382,9 @@ describe("UserController", () => {
 
 
     describe("jwtLogin", () => {
+    beforeEach(() => {
+        process.env.JWT_SECRET = "test-secret";
+    });
         test("Case: No authorization header", async () => {
             // Arrange
             mockRequest.headers = {};
