@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import ChargerSessionController from '../../src/controllers/charger-session-controller';
 import ChargerSessionService from '../../src/services/charger-session-service';
+import { UserStatsService } from '../../src/services/user-stats-service';
 
 // Mock the service layer interactions
 const mockService = {
@@ -9,6 +10,10 @@ const mockService = {
   getSessionById: jest.fn(),
   getSessionsByUser: jest.fn(),
   getSessionsByStation: jest.fn(),
+};
+
+const mockUserStatsService = {
+  recordChargingSession: jest.fn().mockResolvedValue({ newAchievements: [] }),
 };
 
 // Mock charger-session-controller behaviour
@@ -25,7 +30,10 @@ describe('charger-session-controller', () => {
       json: jest.fn(),
     };
     // Mock service instance
-    controller = new ChargerSessionController(mockService as unknown as ChargerSessionService);
+    controller = new ChargerSessionController(
+  mockService as unknown as ChargerSessionService,
+  mockUserStatsService as unknown as UserStatsService
+);
     jest.clearAllMocks();
   });
 
@@ -43,7 +51,7 @@ describe('charger-session-controller', () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: `Charging session ID ${mockSession._id} started.`,
-        data: mockSession,
+	   data: mockSession
       });
     });
 
@@ -75,7 +83,7 @@ describe('charger-session-controller', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: `Charging session ID ${mockSession._id} ended.`,
-        data: mockSession,
+        data: { session: mockSession, newAchievements: [] },
       });
     });
 
