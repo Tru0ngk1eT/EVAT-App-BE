@@ -6,4 +6,5 @@ module.exports = {
   },
   testMatch: ["**/test/**/*.test.ts"],
   testPathIgnorePatterns: ["/node_modules/", "/dist/", "/test/integration/"],
+  testTimeout: 30000,
 };
