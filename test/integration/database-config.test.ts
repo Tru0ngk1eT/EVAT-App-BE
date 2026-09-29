@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import connectDB from '../src/config/database-config';
+import connectDB from '../../src/config/database-config';
 import dotenv from 'dotenv';
 
 dotenv.config();
