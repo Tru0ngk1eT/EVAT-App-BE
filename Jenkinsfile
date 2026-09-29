@@ -16,7 +16,7 @@ pipeline {
 	    steps {
 		bat 'npm ci'
 		bat 'npm run build'
-		bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% -T %IMAGE_NAME%:latest .'
+		bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% -t %IMAGE_NAME%:latest .'
 	    }
 	}
     }
