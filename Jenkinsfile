@@ -32,5 +32,13 @@ pipeline {
                 }
             }
         }
+
+	stage('Code Quality') {
+            steps {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    bat 'npx sonar-scanner-npm "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=%				SONAR_TOKEN%"'
+            }
+            }
+        }
     }
 }
