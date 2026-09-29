@@ -33,12 +33,14 @@ pipeline {
             }
         }
 
-	stage('Code Quality') {
+        stage('Code Quality') {
+            environment {
+                SONAR_TOKEN = credentials('sonar-token')
+            }
             steps {
-                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                    bat 'npx sonar-scanner-npm "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=%				SONAR_TOKEN%"'
+                bat 'if "%SONAR_TOKEN%"=="" (echo ERROR: SONAR_TOKEN is empty & exit /b 1) else (echo SONAR_TOKEN loaded)'
+                bat 'npx sonar-scanner-npm "-Dsonar.host.url=http://localhost:9000"'
             }
-            }
-        }
+        }	
     }
 }
