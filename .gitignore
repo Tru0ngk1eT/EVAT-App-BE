@@ -3,3 +3,6 @@
 /.vscode
 /auth
 *.js
+
+junit.xml
+coverage/
