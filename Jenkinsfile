@@ -9,6 +9,7 @@ pipeline {
     environment {
 	IMAGE_NAME = 'evat-app-be'
 	IMAGE_TAG = "${env.BUILD_NUMBER}"
+        MONGOMS_DOWNLOAD_DIR = 'D:/JenkinsData/mongodb-binaries'
     }
 
         stages {
@@ -22,6 +23,7 @@ pipeline {
 
         stage('Test') {
             steps {
+                bat 'node node_modules/mongodb-memory-server/postinstall.js'
                 bat 'npm run test:ci'
             }
             post {
