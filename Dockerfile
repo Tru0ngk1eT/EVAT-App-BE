@@ -1,21 +1,27 @@
-FROM node:18-alpine
-
+# ---------- Stage 1: build ----------
+FROM node:24-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+# Skip mongodb-memory-server's ~100MB MongoDB binary download (only needed for tests)
+ENV MONGOMS_DISABLE_POSTINSTALL=1
+
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install --production
+COPY tsconfig.json server.ts ./
+COPY src ./src
+RUN npm run build
 
-# Copy source code and TypeScript config
-COPY . .
+# ---------- Stage 2: runtime ----------
+FROM node:24-alpine
+WORKDIR /app
+ENV NODE_ENV=production
 
-# Build TypeScript code
-RUN npm run build && ls -la
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Expose the port the app runs on
+COPY --from=builder /app/dist ./dist
+
+USER node
 EXPOSE 8080
-
-# Command to run the application
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]
