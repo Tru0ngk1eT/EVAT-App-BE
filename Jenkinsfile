@@ -92,6 +92,15 @@ pipeline {
                     bat 'set IMAGE_TAG=stable&& docker compose -p evat-prod up -d --wait || exit /b 0'
                 }
             }
+        }
+
+        stage('Monitoring') {
+            steps {
+                bat 'docker compose -f monitoring/docker-compose.yml -p evat-monitoring run --rm --entrypoint promtool prometheus check config /etc/prometheus/prometheus.yml'
+                bat 'docker compose -f monitoring/docker-compose.yml -p evat-monitoring up -d'
+                bat 'curl -s -X POST http://localhost:9090/-/reload || exit /b 0'
+                bat 'node scripts/check-monitoring.js'
+            }
         }	
     }
 }

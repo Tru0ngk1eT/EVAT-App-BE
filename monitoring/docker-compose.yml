@@ -1,0 +1,16 @@
+﻿services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    restart: unless-stopped

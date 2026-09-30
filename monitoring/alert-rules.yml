@@ -1,0 +1,20 @@
+groups:
+  - name: evat-alerts
+    rules:
+      - alert: EvatAppDown
+        expr: probe_success{job="evat-health"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "EVAT {{ $labels.env }} is down"
+          description: "Health check {{ $labels.instance }} has been failing for more than 30 seconds."
+
+      - alert: EvatSlowResponse
+        expr: probe_duration_seconds{job="evat-health"} > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "EVAT {{ $labels.env }} is responding slowly"
+          description: "Health check on {{ $labels.instance }} has taken longer than 1 second for 1 minute."
