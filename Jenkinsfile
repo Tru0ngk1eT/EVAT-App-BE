@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -58,6 +57,17 @@ pipeline {
                 always {
                     archiveArtifacts artifacts: 'npm-audit.json', allowEmptyArchive: true
                 }
+            }
+        }
+
+        stage('Deploy (Staging)') {
+            environment {
+                APP_PORT   = '3001'
+                JWT_SECRET = credentials('jwt-secret')
+            }
+            steps {
+                bat 'docker compose -p evat-staging up -d --wait'
+                bat 'node scripts/smoke-test.js http://localhost:3001'
             }
         }	
     }

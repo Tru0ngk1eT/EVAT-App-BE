@@ -97,6 +97,10 @@ app.use(
   swaggerUi.setup(swaggerSpec, { explorer: true })
 );
 
+// Health check endpoint for Docker healthchecks, smoke tests and monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
+});
 
 app.get("/api-docs/json", (req, res) => {
   res.json(swaggerSpec);
