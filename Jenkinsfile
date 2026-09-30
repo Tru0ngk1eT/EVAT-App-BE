@@ -69,6 +69,29 @@ pipeline {
                 bat 'docker compose -p evat-staging up -d --wait'
                 bat 'node scripts/smoke-test.js http://localhost:3001'
             }
+        }
+
+        stage('Release (Production)') {
+            environment {
+                IMAGE_TAG  = "v1.0.${env.BUILD_NUMBER}"
+                APP_PORT   = '3002'
+                JWT_SECRET = credentials('jwt-secret-prod')
+                GITHUB     = credentials('github-pat')
+            }
+            steps {
+                bat 'docker tag %IMAGE_NAME%:%BUILD_NUMBER% %IMAGE_NAME%:%IMAGE_TAG%'
+                bat 'docker compose -p evat-prod up -d --wait'
+                bat 'node scripts/smoke-test.js http://localhost:3002'
+                bat 'docker tag %IMAGE_NAME%:%IMAGE_TAG% %IMAGE_NAME%:stable'
+                bat 'git tag %IMAGE_TAG%'
+                bat 'git push https://%GITHUB_USR%:%GITHUB_PSW%@github.com/Tru0ngk1eT/EVAT-App-BE.git %IMAGE_TAG%'
+            }
+            post {
+                failure {
+                    echo 'Release failed - rolling back production to the last stable image'
+                    bat 'set IMAGE_TAG=stable&& docker compose -p evat-prod up -d --wait || exit /b 0'
+                }
+            }
         }	
     }
 }
