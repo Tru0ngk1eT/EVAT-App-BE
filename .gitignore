@@ -10,3 +10,5 @@ coverage/
 .scannerwork/
 
 !scripts/*.js
+
+!jest.integration.config.js
