@@ -25,7 +25,7 @@ pipeline {
                 stage('Test') {
             steps {
                 bat 'node node_modules/mongodb-memory-server/postinstall.js'
-                bat 'npm run test:ci'
+                bat 'npm run test:ci -- --maxWorkers=2'
                 bat 'docker run -d --rm --name mongo-it-%BUILD_NUMBER% -p 27018:27017 mongo:7'
                 bat 'ping -n 11 127.0.0.1 > nul'
                 withEnv(['MONGODB_URI=mongodb://localhost:27018/evat_it']) {
