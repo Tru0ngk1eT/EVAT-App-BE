@@ -17,17 +17,25 @@ pipeline {
                 bat 'npm ci'
                 bat 'npm run build'
                 bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% -t %IMAGE_NAME%:latest .'
+                bat 'docker tag %IMAGE_NAME%:%IMAGE_TAG% %IMAGE_NAME%:%GIT_COMMIT:~0,7%'
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
         }
 
-        stage('Test') {
+                stage('Test') {
             steps {
                 bat 'node node_modules/mongodb-memory-server/postinstall.js'
                 bat 'npm run test:ci'
+                bat 'docker run -d --rm --name mongo-it-%BUILD_NUMBER% -p 27018:27017 mongo:7'
+                bat 'ping -n 11 127.0.0.1 > nul'
+                withEnv(['MONGODB_URI=mongodb://localhost:27018/evat_it']) {
+                    bat 'npm run test:integration'
+                }
             }
             post {
                 always {
                     junit 'junit.xml'
+                    bat 'docker rm -f mongo-it-%BUILD_NUMBER% || exit /b 0'
                 }
             }
         }
