@@ -120,3 +120,4 @@ For more in depth test debugging and running it is recommended to use the [Jest 
 
 1. Invalid token error occurring when performing GET /api/vehicle
 Bearer is correct when checking in code.
+<!-- CI/CD: built, tested and released automatically by the Jenkins pipeline -->
